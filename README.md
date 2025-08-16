@@ -30,7 +30,7 @@ This template is designed to be used with the `gonew` tool for creating new CLI 
 go install golang.org/x/tools/cmd/gonew@latest
 
 # Create a new CLI project from this template
-gonew github.com/chengzhycn/go-cli-template your-org/your-cli-app
+gonew github.com/chengzhycn/wasign your-org/your-cli-app
 
 # Navigate to your new project
 cd your-cli-app
@@ -41,7 +41,7 @@ mv _github .github
 # Initialize git and push to your repository
 git init
 git add .
-git commit -m "Initial commit from go-cli-template"
+git commit -m "Initial commit from wasign"
 git remote add origin https://github.com/your-org/your-cli-app.git
 git push -u origin main
 ```
@@ -52,7 +52,7 @@ If you prefer to clone and customize manually:
 
 ```bash
 # Clone the template
-git clone https://github.com/chengzhycn/go-cli-template.git your-cli-app
+git clone https://github.com/chengzhycn/wasign.git your-cli-app
 cd your-cli-app
 
 # Apply the github ci
@@ -72,7 +72,7 @@ go mod edit -module github.com/your-org/your-cli-app
 ## 🏗️ Project Structure
 
 ```
-go-cli-template/
+wasign/
 ├── cmd/                    # CLI commands
 │   └── root.go            # Root command
 ├── internal/              # Private application code
@@ -287,7 +287,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you encounter any issues or have questions:
 
-1. Check the [Issues](https://github.com/chengzhycn/go-cli-template/issues) page
+1. Check the [Issues](https://github.com/chengzhycn/wasign/issues) page
 2. Review the documentation above
 3. Create a new issue with detailed information
 

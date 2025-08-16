@@ -117,14 +117,14 @@ jobs:
           mkdir -p bin
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build \
             -ldflags "-X main.Version=${{ steps.version.outputs.version }} -X main.CommitHash=${{ steps.version.outputs.commit_hash }} -X main.BuildTime=${{ steps.version.outputs.build_time }} -w -s" \
-            -o bin/go-cli-template-${{ matrix.target }}${{ matrix.os == 'windows' && '.exe' || '' }} \
+            -o bin/wasign-${{ matrix.target }}${{ matrix.os == 'windows' && '.exe' || '' }} \
             ./main.go
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: go-cli-template-${{ matrix.target }}
-          path: bin/go-cli-template-${{ matrix.target }}${{ matrix.os == 'windows' && '.exe' || '' }}
+          name: wasign-${{ matrix.target }}
+          path: bin/wasign-${{ matrix.target }}${{ matrix.os == 'windows' && '.exe' || '' }}
 
   # Create release
   release:
@@ -143,16 +143,16 @@ jobs:
       - name: Create release archive
         run: |
           mkdir -p release
-          cd go-cli-template-linux-amd64
-          tar -czf ../../release/go-cli-template-linux-amd64.tar.gz go-cli-template-linux-amd64
-          cd ../go-cli-template-linux-arm64
-          tar -czf ../../release/go-cli-template-linux-arm64.tar.gz go-cli-template-linux-arm64
-          cd ../go-cli-template-darwin-amd64
-          tar -czf ../../release/go-cli-template-darwin-amd64.tar.gz go-cli-template-darwin-amd64
-          cd ../go-cli-template-darwin-arm64
-          tar -czf ../../release/go-cli-template-darwin-arm64.tar.gz go-cli-template-darwin-arm64
-          cd ../go-cli-template-windows-amd64
-          tar -czf ../../release/go-cli-template-windows-amd64.tar.gz go-cli-template-windows-amd64.exe
+          cd wasign-linux-amd64
+          tar -czf ../../release/wasign-linux-amd64.tar.gz wasign-linux-amd64
+          cd ../wasign-linux-arm64
+          tar -czf ../../release/wasign-linux-arm64.tar.gz wasign-linux-arm64
+          cd ../wasign-darwin-amd64
+          tar -czf ../../release/wasign-darwin-amd64.tar.gz wasign-darwin-amd64
+          cd ../wasign-darwin-arm64
+          tar -czf ../../release/wasign-darwin-arm64.tar.gz wasign-darwin-arm64
+          cd ../wasign-windows-amd64
+          tar -czf ../../release/wasign-windows-amd64.tar.gz wasign-windows-amd64.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

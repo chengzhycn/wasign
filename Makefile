@@ -1,9 +1,9 @@
-# Makefile for go-cli-template
+# Makefile for wasign
 # Variables
-BINARY_NAME=go-cli-template
+BINARY_NAME=wasign
 MAIN_FILE=main.go
 BUILD_DIR=bin
-DOCKER_IMAGE=go-cli-template
+DOCKER_IMAGE=wasign
 VERSION?=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COMMIT_HASH=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TIME=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
@@ -11,7 +11,7 @@ LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.CommitHash=${COMMIT_HASH} -
 
 # Docker registry configuration (can be overridden by environment variables)
 REGISTRY ?= ghcr.io
-IMAGE_NAME ?= go-cli-template
+IMAGE_NAME ?= wasign
 FULL_IMAGE_NAME = $(if $(REGISTRY),$(REGISTRY)/$(IMAGE_NAME),$(IMAGE_NAME))
 
 # Go related variables

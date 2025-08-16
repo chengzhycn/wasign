@@ -25,7 +25,7 @@ COPY . .
 # Build the application with platform-specific settings
 # CGO_ENABLED=0 ensures static linking
 # -ldflags="-w -s" strips debug information to reduce binary size
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -ldflags="-w -s" -o go-cli-template ./main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -ldflags="-w -s" -o wasign ./main.go
 
 # Final stage
 FROM alpine:latest
@@ -41,7 +41,7 @@ RUN addgroup -g 1001 -S appgroup && \
 WORKDIR /app
 
 # Copy binary from builder stage
-COPY --from=builder /app/go-cli-template .
+COPY --from=builder /app/wasign .
 
 # Change ownership to non-root user
 RUN chown -R appuser:appgroup /app
@@ -50,7 +50,7 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Set the binary as the entrypoint
-ENTRYPOINT ["./go-cli-template"]
+ENTRYPOINT ["./wasign"]
 
 # Default command (can be overridden)
 CMD ["--help"] 
