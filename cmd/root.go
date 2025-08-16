@@ -12,6 +12,8 @@ import (
 
 	extism "github.com/extism/go-sdk"
 	"github.com/spf13/cobra"
+
+	hostfuncs "github.com/chengzhycn/wasign/pkg/host_funcs"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -30,10 +32,15 @@ to quickly create a Cobra application.`,
 		manifest := extism.Manifest{
 			Wasm: []extism.Wasm{
 				extism.WasmFile{
-					Path: "wasm/add/add.wasm",
+					Path: "wasm/hmac256/hmac256_demo.wasm",
 				},
 			},
 		}
+
+		hmac256 := extism.NewHostFunctionWithStack("hmac256",
+			hostfuncs.Hmac256,
+			[]extism.ValueType{extism.ValueTypePTR, extism.ValueTypePTR},
+			[]extism.ValueType{extism.ValueTypePTR})
 
 		ctx := context.Background()
 		config := extism.PluginConfig{
@@ -41,7 +48,7 @@ to quickly create a Cobra application.`,
 		}
 
 		// Step 1: Compile the plugin once
-		compiledPlugin, err := extism.NewCompiledPlugin(ctx, manifest, config, []extism.HostFunction{})
+		compiledPlugin, err := extism.NewCompiledPlugin(ctx, manifest, config, []extism.HostFunction{hmac256})
 		if err != nil {
 			panic(err)
 		}
@@ -61,25 +68,27 @@ to quickly create a Cobra application.`,
 				}
 				defer plugin.Close(ctx)
 
-				type AddInput struct {
-					A int `json:"a"`
-					B int `json:"b"`
+				type Hmac256Input struct {
+					Key          string `json:"key"`
+					ToSignString string `json:"to_sign_string"`
 				}
 
-				data, err := json.Marshal(AddInput{A: 1, B: 2})
-
+				data, err := json.Marshal(Hmac256Input{
+					Key:          "1234567890",
+					ToSignString: "Hello, World!",
+				})
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
 
-				_, out, err := plugin.Call("add", data)
+				_, out, err := plugin.Call("hmac256_demo", data)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
 
-				fmt.Printf("Goroutine %d result: %s\n", id, string(out))
+				fmt.Printf("Goroutine %d result: %x\n", id, out)
 			}(i)
 		}
 		wg.Wait()
