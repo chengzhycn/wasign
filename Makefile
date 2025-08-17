@@ -263,6 +263,62 @@ check: fmt vet test lint ## Run all checks
 ci: deps check build-all ## Run CI pipeline
 	@echo "CI pipeline completed"
 
+# WASM targets
+.PHONY: wasm
+wasm: ## Build all WASM modules in wasm/ directory
+	@echo "Building WASM modules..."
+	@for dir in $$(find wasm -mindepth 1 -maxdepth 1 -type d); do \
+		if [ -f "$$dir/main.go" ]; then \
+			module_name=$$(basename $$dir); \
+			wasm_file="$$dir/$$module_name.wasm"; \
+			source_file="$$dir/main.go"; \
+			if [ ! -f "$$wasm_file" ] || [ "$$source_file" -nt "$$wasm_file" ]; then \
+				echo "Building WASM module: $$module_name (source changed)"; \
+				cd $$dir && tinygo build -o $$module_name.wasm -target wasip1 -buildmode=c-shared main.go && cd ../..; \
+			else \
+				echo "WASM module $$module_name is up to date"; \
+			fi; \
+		fi; \
+	done
+
+# Build a specific WASM module
+wasm-%: ## Build a specific WASM module (e.g., make wasm-add)
+	@module_name=$*; \
+	wasm_dir="wasm/$$module_name"; \
+	if [ ! -d "$$wasm_dir" ]; then \
+		echo "Error: WASM module directory $$wasm_dir does not exist"; \
+		exit 1; \
+	fi; \
+	if [ ! -f "$$wasm_dir/main.go" ]; then \
+		echo "Error: main.go not found in $$wasm_dir"; \
+		exit 1; \
+	fi; \
+	wasm_file="$$wasm_dir/$$module_name.wasm"; \
+	source_file="$$wasm_dir/main.go"; \
+	if [ ! -f "$$wasm_file" ] || [ "$$source_file" -nt "$$wasm_file" ]; then \
+		echo "Building WASM module: $$module_name"; \
+		cd $$wasm_dir && tinygo build -o $$module_name.wasm -target wasip1 -buildmode=c-shared main.go; \
+	else \
+		echo "WASM module $$module_name is up to date"; \
+	fi
+
+# Force rebuild all WASM modules
+.PHONY: wasm-force
+wasm-force: ## Force rebuild all WASM modules (ignore timestamps)
+	@echo "Force building all WASM modules..."
+	@for dir in $$(find wasm -mindepth 1 -maxdepth 1 -type d); do \
+		if [ -f "$$dir/main.go" ]; then \
+			module_name=$$(basename $$dir); \
+			echo "Building WASM module: $$module_name (forced)"; \
+			cd $$dir && tinygo build -o $$module_name.wasm -target wasip1 -buildmode=c-shared main.go && cd ../..; \
+		fi; \
+	done
+
+.PHONY: wasm-clean
+wasm-clean: ## Clean all WASM artifacts
+	@echo "Cleaning WASM artifacts..."
+	@find wasm -name "*.wasm" -type f -delete
+
 # Install development tools
 .PHONY: install-tools
 install-tools: ## Install development tools
@@ -271,4 +327,7 @@ install-tools: ## Install development tools
 	go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
 	go install golang.org/x/vuln/cmd/govulncheck@latest
 	go install golang.org/x/tools/cmd/godoc@latest
-	go install github.com/cosmtrek/air@latest 
+	go install github.com/cosmtrek/air@latest
+	@if ! command -v tinygo >/dev/null 2>&1; then \
+		echo "TinyGo not found. Please install TinyGo from https://tinygo.org/getting-started/install/"; \
+	fi 
