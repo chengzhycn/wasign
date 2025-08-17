@@ -10,8 +10,9 @@ import (
 )
 
 // func Sign(input SignInput) (SignOutput, error)
+// A help wrapper for the real sign function.
 //
-//go:wasmexport sign
+//go:wasmexport Sign
 func Sign() int32 {
 	var input wasm.SignInput
 	if err := pdk.InputJSON(&input); err != nil {

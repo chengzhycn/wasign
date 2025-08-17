@@ -86,7 +86,7 @@ to quickly create a Cobra application.`,
 					return
 				}
 
-				_, out, err := plugin.Call("sign", data)
+				_, out, err := plugin.Call("Sign", data)
 				if err != nil {
 					fmt.Println(err)
 					return
